@@ -27,15 +27,8 @@ jobs:
           from pathlib import Path
           path = Path('src/materials/point-cloud-material.ts')
           text = path.read_text()
-          old = """    this.defaultAttributeValues.normal = [0, 0, 0];
-    this.defaultAttributeValues.classification = [0, 0, 0];
-    this.defaultAttributeValues.indices = [0, 0, 0, 0];
-"""
-          new = """    const defaultAttributeValues = this.defaultAttributeValues as unknown as Record<string, number[]>;
-    defaultAttributeValues.normal = [0, 0, 0];
-    defaultAttributeValues.classification = [0, 0, 0];
-    defaultAttributeValues.indices = [0, 0, 0, 0];
-"""
+          old = "    this.defaultAttributeValues.normal = [0, 0, 0];\n    this.defaultAttributeValues.classification = [0, 0, 0];\n    this.defaultAttributeValues.indices = [0, 0, 0, 0];\n"
+          new = "    const defaultAttributeValues = this.defaultAttributeValues as unknown as Record<string, number[]>;\n    defaultAttributeValues.normal = [0, 0, 0];\n    defaultAttributeValues.classification = [0, 0, 0];\n    defaultAttributeValues.indices = [0, 0, 0, 0];\n"
           if old not in text:
               raise SystemExit('Expected default attribute block not found')
           path.write_text(text.replace(old, new, 1))
