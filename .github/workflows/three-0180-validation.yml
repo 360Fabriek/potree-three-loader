@@ -21,6 +21,25 @@ jobs:
         with:
           node-version: 22.23.0
           cache: npm
+      - name: Adapt custom default attributes
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('src/materials/point-cloud-material.ts')
+          text = path.read_text()
+          old = """    this.defaultAttributeValues.normal = [0, 0, 0];
+    this.defaultAttributeValues.classification = [0, 0, 0];
+    this.defaultAttributeValues.indices = [0, 0, 0, 0];
+"""
+          new = """    const defaultAttributeValues = this.defaultAttributeValues as unknown as Record<string, number[]>;
+    defaultAttributeValues.normal = [0, 0, 0];
+    defaultAttributeValues.classification = [0, 0, 0];
+    defaultAttributeValues.indices = [0, 0, 0, 0];
+"""
+          if old not in text:
+              raise SystemExit('Expected default attribute block not found')
+          path.write_text(text.replace(old, new, 1))
+          PY
       - name: Refresh lockfile
         run: npm install --package-lock-only --ignore-scripts
       - name: Install cleanly
@@ -29,13 +48,13 @@ jobs:
         run: npm run build
       - name: Lint
         run: npm run lint
-      - name: Commit lockfile
+      - name: Commit compatibility updates
         run: |
-          if git diff --quiet -- package-lock.json; then
+          if git diff --quiet -- package-lock.json src/materials/point-cloud-material.ts; then
             exit 0
           fi
           git config user.name "Patrick van Halm"
           git config user.email "99954741+Patrick-van-Halm-360Fabriek@users.noreply.github.com"
-          git add package-lock.json
-          git commit -m "Update lockfile for Three 0.180"
+          git add package-lock.json src/materials/point-cloud-material.ts
+          git commit -m "Adapt point cloud material to Three 0.180"
           git push origin HEAD:compat/three-0.180
