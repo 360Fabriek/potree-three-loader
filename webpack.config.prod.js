@@ -1,5 +1,4 @@
 const CircularDependencyPlugin = require('circular-dependency-plugin');
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const webpack = require('webpack');
 const baseConfig = require('./webpack.config');
 
@@ -17,6 +16,5 @@ module.exports = {
       failOnError: true,
       cwd: process.cwd(),
     }),
-    new BundleAnalyzerPlugin({ analyzerMode: 'static' }),
   ],
 };
